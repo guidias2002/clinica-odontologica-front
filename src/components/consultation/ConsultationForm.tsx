@@ -3,7 +3,8 @@ import { useEffect, useState } from "react"
 import { Patient } from "../../interface/Patient";
 import { Professional } from "../../interface/Professional";
 import { AvailableTime } from "../../interface/AvailableTime";
-import { MenuItem, Select, TextField } from "@mui/material";
+import { Button, FormControl, MenuItem, Select, TextField } from "@mui/material";
+import { Consultation } from "../../interface/Consultation";
 
 const ConsultationForm = () => {
 
@@ -14,6 +15,32 @@ const ConsultationForm = () => {
     const [patientData, setPatientData] = useState<Patient | null>();
     const [professionalData, setProfessionalData] = useState<Professional[] | null>();
     const [availableTimeData, setAvailableTimeData] = useState<AvailableTime[] | null>();
+    const [consultation, setConsultation] = useState<Consultation>({
+        patientName: "",
+        patientEmail: "",
+        patientCellphone: "",
+        patientCpf: "",
+        professionalId: 0,
+        professionalName: "",
+        availableTimeId: 0,
+        consultationDate: "",
+        consultationTime: "",
+        consultationType: "",
+        estimatedDuration: 0,
+        status: "",
+        observations: "",
+        consultationValue: 0,
+        paymentMethod: "",
+        paymentStatus: "",
+        notificationSent: false,
+      });
+
+
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = event.target;
+        setConsultation((prev) => ({ ...prev, [name]: value }));
+      };
+
 
     const fetchPatientData = async () => {
         if (!cpf) return;
@@ -59,58 +86,85 @@ const ConsultationForm = () => {
     }, [idProfessional, date]);
 
 
+    const handleSubmit = async (event: React.FormEvent) => {
+        event.preventDefault();
+
+        try {
+            await axios.post("http://localhost:8080/consultation", consultation)
+            alert("cadastrado com sucesso")
+        } catch (error) {
+            console.log("Erro ao cadastrar consulta")
+        }
+    }
+
+
     return (
-        <form>
-            <TextField
-                id="outlined-basic"
-                label="CPF"
-                variant="outlined"
-                value={cpf}
-                onChange={(e) => setCpf(e.target.value)}
-                onBlur={fetchPatientData}
-            />
+        <FormControl component="form" onSubmit={handleSubmit}>
 
-            <TextField id="outlined-basic" label="Nome" value={patientData?.name} variant="outlined" />
-            <TextField id="outlined-basic" label="Email" value={patientData?.email} variant="outlined" />
-            <TextField id="outlined-basic" label="Telefone" value={patientData?.cellphone} variant="outlined" />
+            {/* dados do paciente */}
+            <div>
+                <TextField id="outlined-basic" label="CPF" variant="outlined" value={cpf} onChange={(e) => setCpf(e.target.value)} onBlur={fetchPatientData} />
+                <TextField id="outlined-basic" label="Nome" value={patientData?.name} variant="outlined" />
+                <TextField id="outlined-basic" label="Email" value={patientData?.email} variant="outlined" />
+                <TextField id="outlined-basic" label="Telefone" value={patientData?.cellphone} variant="outlined" />
+            </div>
 
-            <br />
-            <br />
 
-            <Select
-                labelId="demo-select-small-label"
-                id="demo-select-small"
-                label="Profissional"
-                onChange={(e) => setIdProfessional(e.target.value)}
-            >
-                {professionalData?.map((professional) => (
-                    <MenuItem key={professional.id} value={professional.id}>{professional.name}</MenuItem>
+            {/* dados da consulta */}
+            <div>
+                <Select labelId="demo-select-small-label" id="demo-select-small" label="Profissional" onChange={(e) => setIdProfessional(e.target.value)}>
+                    <MenuItem value="" disabled>Selecione o profissional</MenuItem>
+                    {professionalData?.map((professional) => (
+                        <MenuItem key={professional.id} value={professional.id}>{professional.name}</MenuItem>
+                    ))}
+                </Select>
+
+                <TextField label="Procedimento" variant="outlined" />
+                <TextField label="Observações" variant="outlined" />
+                <TextField type="date" onChange={(e) => setDate(e.target.value)} />
+
+
+                {availableTimeData?.map((time) => (
+                    <a key={time.id} style={{ color: time.booked ? "red" : "black" }}>
+                        {time.time}
+                    </a>
                 ))}
-            </Select>
 
+                <Select name="select">
+                    <MenuItem value="" disabled>Status da consulta</MenuItem>
+                    <MenuItem value="">Agendada</MenuItem>
+                    <MenuItem value="">Realizada</MenuItem>
+                    <MenuItem value="">Remarcada</MenuItem>
+                    <MenuItem value="">Cancelada</MenuItem>
+                </Select>
+            </div>
 
-            <input type="text" placeholder="Procedimento" readOnly />
-            <input type="text" placeholder="Observações" readOnly />
-            <input type="date" onChange={(e) => setDate(e.target.value)} />
+            <div>
+                {/* Valor da Consulta */}
+                <TextField label="Valor da Consulta (R$)" name="consultationValue" type="number" variant="outlined" required />
 
+                {/* Método de Pagamento */}
+                <Select name="paymentMethod" displayEmpty required>
+                    <MenuItem value="" disabled>Selecione o método de pagamento</MenuItem>
+                    <MenuItem value="Cartão de Crédito">Cartão de Crédito</MenuItem>
+                    <MenuItem value="Cartão de Débito">Cartão de Débito</MenuItem>
+                    <MenuItem value="PIX">PIX</MenuItem>
+                    <MenuItem value="Dinheiro">Dinheiro</MenuItem>
+                </Select>
 
-            {availableTimeData?.map((time) => (
+                {/* Status do Pagamento */}
+                <Select name="paymentStatus" displayEmpty required>
+                    <MenuItem value="" disabled>Selecione o status do pagamento</MenuItem>
+                    <MenuItem value="Pago">Pago</MenuItem>
+                    <MenuItem value="Pendente">Pendente</MenuItem>
+                </Select>
+            </div>
 
-                <a
-                    key={time.id}
-                    style={{ color: time.booked ? "red" : "black" }}
-                >
-                    {time.time}</a>
-            ))}
-
-            <select name="select">
-                <option value="">Status da consulta</option>
-                <option value="">Agendada</option>
-                <option value="">Realizada</option>
-                <option value="">Remarcada</option>
-                <option value="">Cancelada</option>
-            </select>
-        </form>
+            <div>
+                <Button>Cancelar</Button>
+                <Button type="submit">Enviar</Button>
+            </div>
+        </FormControl>
     );
 }
 
