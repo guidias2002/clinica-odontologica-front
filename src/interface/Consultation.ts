@@ -6,7 +6,6 @@ export interface Consultation {
   patientCpf: string;
   professionalId?: number;
   professionalName: string;
-  availableTimeId: number;
   consultationDate: string;
   consultationTime: string;
   consultationType: string;
