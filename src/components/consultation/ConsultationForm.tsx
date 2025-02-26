@@ -15,6 +15,7 @@ const ConsultationForm = () => {
     const [professionalData, setProfessionalData] = useState<Professional[] | null>();
     const [availableTimeData, setAvailableTimeData] = useState<AvailableTime[] | null>();
     const [patientData, setPatientData] = useState<Patient | null>(null);
+    const [selectedTime, setSelectedTime] = useState<string | null>(null);
     const [consultation, setConsultation] = useState<Consultation>({
         patientName: "",
         patientEmail: "",
@@ -117,138 +118,196 @@ const ConsultationForm = () => {
         setProfessionalName(selectedProfessional ? selectedProfessional.name : "");
     };
 
+    const handleTimeSelection = (time: string, booked: boolean) => {
+        if (!booked) {
+            setSelectedTime(time);
+            setConsultation(prev => ({ ...prev, consultationTime: time }));
+        }
+    };
+
 
     return (
-        <form onSubmit={handleSubmit}>
 
-            {/* Dados do Paciente */}
-            <div>
-                <TextField
-                    id="cpf"
-                    label="CPF"
-                    variant="outlined"
-                    value={cpf}
-                    onChange={(e) => setCpf(e.target.value)}
-                    onBlur={fetchPatientData}
-                />
+        <div className="flex items-center justify-center h-screen bg-gray-100">
 
-                <TextField
-                    id="name"
-                    label="Nome"
-                    value={patientData?.name || ""}
-                    variant="outlined"
-                    disabled
-                />
+            <form className="flex flex-col justify-center w-[800px] gap-6" onSubmit={handleSubmit}>
 
-                <TextField
-                    id="email"
-                    label="Email"
-                    value={patientData?.email || ""}
-                    variant="outlined"
-                    disabled
-                />
+                {/* div main */}
+                <div className="flex flex-col w-full gap-3">
 
-                <TextField
-                    id="cellphone"
-                    label="Telefone"
-                    value={patientData?.cellphone || ""}
-                    variant="outlined"
-                    disabled
-                />
-            </div>
+                    <h3>Dados do paciente</h3>
 
-            {/* Dados da Consulta */}
-            <div>
-                <Select name="professionalId" value={idProfessional} onChange={handleProfessionalChange} displayEmpty required>
-                    <MenuItem value="" disabled>Selecione o profissional</MenuItem>
-                    {professionalData?.map((professional) => (
-                        <MenuItem key={professional.id} value={professional.id}>{professional.name}</MenuItem>
-                    ))}
-                </Select>
+                    <div className="flex flex-col gap-4">
+                        <div className="flex gap-4 w-full">
+                            <TextField
+                                id="cpf"
+                                label="CPF"
+                                variant="outlined"
+                                value={cpf}
+                                onChange={(e) => setCpf(e.target.value)}
+                                onBlur={fetchPatientData}
+                                fullWidth
+                            />
 
-                <TextField
-                    label="Procedimento"
-                    name="consultationType"
-                    variant="outlined"
-                    onChange={handleChange}
-                />
+                            <TextField
+                                id="name"
+                                label="Nome"
+                                value={patientData?.name || ""}
+                                variant="outlined"
+                                disabled
+                                fullWidth
+                            />
+                        </div>
 
-                <TextField
-                    label="Observações"
-                    name="observations"
-                    variant="outlined"
-                    onChange={handleChange}
-                />
+                        <div className="flex gap-4 w-full">
+                            <TextField
+                                id="email"
+                                label="Email"
+                                value={patientData?.email || ""}
+                                variant="outlined"
+                                disabled
+                                fullWidth
+                            />
 
-                <TextField
-                    type="date"
-                    name="consultationDate"
-                    value={date}
-                    onChange={(e) => setDate(e.target.value)}
-                    required
-                />
+                            <TextField
+                                id="cellphone"
+                                label="Telefone"
+                                value={patientData?.cellphone || ""}
+                                variant="outlined"
+                                disabled
+                                fullWidth
+                            />
+                        </div>
+                    </div>
+                </div>
 
-                {availableTimeData?.map((time) => (
-                    <span
-                        key={time.id}
-                        onClick={() => setConsultation(prev => ({ ...prev, consultationTime: time.time }))}
-                        style={{
-                            color: time.booked ? "red" : "black",
-                            cursor: time.booked ? "not-allowed" : "pointer",
-                            textDecoration: time.booked ? "line-through" : "none",
-                            padding: "5px",
-                            margin: "5px",
-                            border: time.booked ? "none" : "1px solid black",
-                            borderRadius: "5px",
-                            display: "inline-block"
-                        }}
-                    >
-                        {time.time}
-                    </span>
-                ))}
+                {/* Dados da Consulta */}
+                <div className="flex flex-col w-full gap-3">
 
-                <Select name="status" value={consultation.status} onChange={handleChange} displayEmpty required>
-                    <MenuItem value="" disabled>Status da consulta</MenuItem>
-                    <MenuItem value="AGENDADA">Agendada</MenuItem>
-                    <MenuItem value="REALIZADA">Realizada</MenuItem>
-                    <MenuItem value="REMARCADA">Remarcada</MenuItem>
-                    <MenuItem value="CANCELADA">Cancelada</MenuItem>
-                </Select>
-            </div>
+                    <h3>Dados da consulta</h3>
 
-            {/* Pagamento */}
-            <div>
-                <TextField
-                    label="Valor da Consulta (R$)"
-                    name="consultationValue"
-                    type="number"
-                    variant="outlined"
-                    value={consultation.consultationValue}
-                    onChange={handleChange}
-                    required
-                />
+                    <div className="flex flex-col gap-4">
+                        <div className="flex gap-4 w-full">
+                            <Select name="professionalId" value={idProfessional} onChange={handleProfessionalChange} displayEmpty required fullWidth>
+                                <MenuItem value="" disabled>Selecione o profissional</MenuItem>
+                                {professionalData?.map((professional) => (
+                                    <MenuItem key={professional.id} value={professional.id}>{professional.name}</MenuItem>
+                                ))}
+                            </Select>
 
-                <Select name="paymentMethod" value={consultation.paymentMethod} onChange={handleChange} displayEmpty required>
-                    <MenuItem value="" disabled>Método de pagamento</MenuItem>
-                    <MenuItem value="Cartão de Crédito">Cartão de Crédito</MenuItem>
-                    <MenuItem value="Cartão de Débito">Cartão de Débito</MenuItem>
-                    <MenuItem value="PIX">PIX</MenuItem>
-                    <MenuItem value="Dinheiro">Dinheiro</MenuItem>
-                </Select>
+                            <TextField
+                                label="Procedimento"
+                                name="consultationType"
+                                variant="outlined"
+                                onChange={handleChange}
+                                fullWidth
+                            />
+                        </div>
 
-                <Select name="paymentStatus" value={consultation.paymentStatus} onChange={handleChange} displayEmpty required>
-                    <MenuItem value="" disabled>Status do pagamento</MenuItem>
-                    <MenuItem value="Pago">Pago</MenuItem>
-                    <MenuItem value="Pendente">Pendente</MenuItem>
-                </Select>
-            </div>
+                        <TextField
+                            label="Observações"
+                            name="observations"
+                            variant="outlined"
+                            onChange={handleChange}
+                            fullWidth
+                        />
+                    </div>
 
-            <div>
-                <Button>Cancelar</Button>
-                <Button type="submit">Enviar</Button>
-            </div>
+                    <div className="flex gap-4">
+                        <div className="flex flex-col gap-4 w-1/2">
+                            <TextField
+                                type="date"
+                                name="consultationDate"
+                                value={date}
+                                onChange={(e) => setDate(e.target.value)}
+                                required
+                                fullWidth
+                            />
 
-        </form>
+                            <Select name="status" value={consultation.status} onChange={handleChange} displayEmpty required fullWidth>
+                                <MenuItem value="" disabled>Status da consulta</MenuItem>
+                                <MenuItem value="AGENDADA">Agendada</MenuItem>
+                                <MenuItem value="REALIZADA">Realizada</MenuItem>
+                                <MenuItem value="REMARCADA">Remarcada</MenuItem>
+                                <MenuItem value="CANCELADA">Cancelada</MenuItem>
+                            </Select>
+
+                        </div>
+
+                        <div className="flex flex-col gap-2 w-1/2">
+                            <p>Horários disponíveis</p>
+
+                            <div className="flex flex-wrap gap-3">
+                                {(availableTimeData?.length ?? 0) ? (
+                                    availableTimeData?.map((time) => (
+                                        <span
+                                            key={time.id}
+                                            onClick={() => handleTimeSelection(time.time, time.booked)}
+                                            style={{
+                                                color: "white",
+                                                backgroundColor: time.booked 
+                                                    ? "#BABABA" 
+                                                    : selectedTime === time.time 
+                                                        ? "#14f00c"
+                                                        : "#8338EC",
+                                                cursor: time.booked ? "not-allowed" : "pointer",
+                                                padding: "8px",
+                                                borderRadius: "5px",
+                                                transition: "0.2s",
+                                            }}
+                                        >
+                                            {time.time}
+                                        </span>
+                                    ))
+                                ) : (
+                                    <p style={{ color: "gray", fontStyle: "italic" }}>
+                                        Selecione o profissional e a data.
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Pagamento */}
+                <div className="flex flex-col w-full gap-3">
+
+                    <h3>Dados de pagamento</h3>
+
+                    <div className="flex gap-4 w-full">
+                        <TextField
+                            label="Valor da Consulta (R$)"
+                            name="consultationValue"
+                            type="number"
+                            variant="outlined"
+                            value={consultation.consultationValue}
+                            onChange={handleChange}
+                            required
+                            fullWidth
+                        />
+
+                        <Select name="paymentMethod" value={consultation.paymentMethod} onChange={handleChange} displayEmpty required fullWidth>
+                            <MenuItem value="" disabled>Método de pagamento</MenuItem>
+                            <MenuItem value="Cartão de Crédito">Cartão de Crédito</MenuItem>
+                            <MenuItem value="Cartão de Débito">Cartão de Débito</MenuItem>
+                            <MenuItem value="PIX">PIX</MenuItem>
+                            <MenuItem value="Dinheiro">Dinheiro</MenuItem>
+                        </Select>
+                    </div>
+
+                    <Select name="paymentStatus" value={consultation.paymentStatus} onChange={handleChange} displayEmpty required>
+                        <MenuItem value="" disabled>Status do pagamento</MenuItem>
+                        <MenuItem value="Pago">Pago</MenuItem>
+                        <MenuItem value="Pendente">Pendente</MenuItem>
+                    </Select>
+                </div>
+
+                <div>
+                    <Button>Cancelar</Button>
+                    <Button type="submit">Enviar</Button>
+                </div>
+            </form>
+        </div>
     );
 }
 
