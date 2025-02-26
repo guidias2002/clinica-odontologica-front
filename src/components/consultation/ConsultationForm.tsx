@@ -3,13 +3,13 @@ import { useEffect, useState } from "react"
 import { Patient } from "../../interface/Patient";
 import { Professional } from "../../interface/Professional";
 import { AvailableTime } from "../../interface/AvailableTime";
-import { Button, MenuItem, Select, SelectChangeEvent, TextField } from "@mui/material";
+import { MenuItem, Select, SelectChangeEvent, TextField } from "@mui/material";
 import { Consultation } from "../../interface/Consultation";
 
 const ConsultationForm = () => {
 
     const [cpf, setCpf] = useState("");
-    const [idProfessional, setIdProfessional] = useState(0);
+    const [idProfessional, setIdProfessional] = useState<string | number>("");
     const [professionalName, setProfessionalName] = useState<string>("");
     const [date, setDate] = useState("");
     const [professionalData, setProfessionalData] = useState<Professional[] | null>();
@@ -110,7 +110,7 @@ const ConsultationForm = () => {
     };
 
 
-    const handleProfessionalChange = (event: SelectChangeEvent<number>) => {
+    const handleProfessionalChange = (event: SelectChangeEvent<number | string>) => {
         const selectedId = event.target.value as number;
         setIdProfessional(selectedId);
 
@@ -245,9 +245,9 @@ const ConsultationForm = () => {
                                             onClick={() => handleTimeSelection(time.time, time.booked)}
                                             style={{
                                                 color: "white",
-                                                backgroundColor: time.booked 
-                                                    ? "#BABABA" 
-                                                    : selectedTime === time.time 
+                                                backgroundColor: time.booked
+                                                    ? "#BABABA"
+                                                    : selectedTime === time.time
                                                         ? "#14f00c"
                                                         : "#8338EC",
                                                 cursor: time.booked ? "not-allowed" : "pointer",
@@ -274,7 +274,7 @@ const ConsultationForm = () => {
 
                     <h3>Dados de pagamento</h3>
 
-                    <div className="flex gap-4 w-full">
+                    <div className="flex gap-4">
                         <TextField
                             label="Valor da Consulta (R$)"
                             name="consultationValue"
@@ -293,18 +293,19 @@ const ConsultationForm = () => {
                             <MenuItem value="PIX">PIX</MenuItem>
                             <MenuItem value="Dinheiro">Dinheiro</MenuItem>
                         </Select>
-                    </div>
 
-                    <Select name="paymentStatus" value={consultation.paymentStatus} onChange={handleChange} displayEmpty required>
-                        <MenuItem value="" disabled>Status do pagamento</MenuItem>
-                        <MenuItem value="Pago">Pago</MenuItem>
-                        <MenuItem value="Pendente">Pendente</MenuItem>
-                    </Select>
+
+                        <Select name="paymentStatus" value={consultation.paymentStatus} onChange={handleChange} displayEmpty required fullWidth>
+                            <MenuItem value="" disabled>Status do pagamento</MenuItem>
+                            <MenuItem value="Pago">Pago</MenuItem>
+                            <MenuItem value="Pendente">Pendente</MenuItem>
+                        </Select>
+                    </div>
                 </div>
 
-                <div>
-                    <Button>Cancelar</Button>
-                    <Button type="submit">Enviar</Button>
+                <div className="flex w-1/2 gap-4 ml-auto">
+                    <button className="w-full bg-[#BABABA] p-3 rounded-sm text-white hover:cursor-pointer">Cancelar</button>
+                    <button className="w-full bg-[#8338EC] p-3 rounded-sm text-white hover:cursor-pointer" type="submit">Enviar</button>
                 </div>
             </form>
         </div>
