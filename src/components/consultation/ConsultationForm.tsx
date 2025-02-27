@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import { Patient } from "../../interface/Patient";
 import { Professional } from "../../interface/Professional";
 import { AvailableTime } from "../../interface/AvailableTime";
-import { MenuItem, Select, SelectChangeEvent, TextField } from "@mui/material";
+import { Divider, MenuItem, Select, SelectChangeEvent, TextField } from "@mui/material";
 import { Consultation } from "../../interface/Consultation";
 
 const ConsultationForm = () => {
@@ -127,188 +127,188 @@ const ConsultationForm = () => {
 
 
     return (
+        <form className="flex flex-col w-full gap-6" onSubmit={handleSubmit}>
 
-        <div className="flex items-center justify-center h-screen bg-gray-100">
+            {/* div main */}
+            <div className="flex flex-col w-full gap-3">
 
-            <form className="flex flex-col justify-center w-[800px] gap-6" onSubmit={handleSubmit}>
+                <h3>Dados do paciente</h3>
 
-                {/* div main */}
-                <div className="flex flex-col w-full gap-3">
-
-                    <h3>Dados do paciente</h3>
-
-                    <div className="flex flex-col gap-4">
-                        <div className="flex gap-4 w-full">
-                            <TextField
-                                id="cpf"
-                                label="CPF"
-                                variant="outlined"
-                                value={cpf}
-                                onChange={(e) => setCpf(e.target.value)}
-                                onBlur={fetchPatientData}
-                                fullWidth
-                            />
-
-                            <TextField
-                                id="name"
-                                label="Nome"
-                                value={patientData?.name || ""}
-                                variant="outlined"
-                                disabled
-                                fullWidth
-                            />
-                        </div>
-
-                        <div className="flex gap-4 w-full">
-                            <TextField
-                                id="email"
-                                label="Email"
-                                value={patientData?.email || ""}
-                                variant="outlined"
-                                disabled
-                                fullWidth
-                            />
-
-                            <TextField
-                                id="cellphone"
-                                label="Telefone"
-                                value={patientData?.cellphone || ""}
-                                variant="outlined"
-                                disabled
-                                fullWidth
-                            />
-                        </div>
-                    </div>
-                </div>
-
-                {/* Dados da Consulta */}
-                <div className="flex flex-col w-full gap-3">
-
-                    <h3>Dados da consulta</h3>
-
-                    <div className="flex flex-col gap-4">
-                        <div className="flex gap-4 w-full">
-                            <Select name="professionalId" value={idProfessional} onChange={handleProfessionalChange} displayEmpty required fullWidth>
-                                <MenuItem value="" disabled>Selecione o profissional</MenuItem>
-                                {professionalData?.map((professional) => (
-                                    <MenuItem key={professional.id} value={professional.id}>{professional.name}</MenuItem>
-                                ))}
-                            </Select>
-
-                            <TextField
-                                label="Procedimento"
-                                name="consultationType"
-                                variant="outlined"
-                                onChange={handleChange}
-                                fullWidth
-                            />
-                        </div>
+                <div className="flex flex-col gap-4">
+                    <div className="flex gap-4 w-full">
+                        <TextField
+                            id="cpf"
+                            label="CPF"
+                            variant="outlined"
+                            value={cpf}
+                            onChange={(e) => setCpf(e.target.value)}
+                            onBlur={fetchPatientData}
+                            fullWidth
+                        />
 
                         <TextField
-                            label="Observações"
-                            name="observations"
+                            id="name"
+                            label="Nome"
+                            value={patientData?.name || ""}
+                            variant="outlined"
+                            disabled
+                            fullWidth
+                        />
+                    </div>
+
+                    <div className="flex gap-4 w-full">
+                        <TextField
+                            id="email"
+                            label="Email"
+                            value={patientData?.email || ""}
+                            variant="outlined"
+                            disabled
+                            fullWidth
+                        />
+
+                        <TextField
+                            id="cellphone"
+                            label="Telefone"
+                            value={patientData?.cellphone || ""}
+                            variant="outlined"
+                            disabled
+                            fullWidth
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <Divider/>
+
+            {/* Dados da Consulta */}
+            <div className="flex flex-col w-full gap-3">
+
+                <h3>Dados da consulta</h3>
+
+                <div className="flex flex-col gap-4">
+                    <div className="flex gap-4 w-full">
+                        <Select name="professionalId" value={idProfessional} onChange={handleProfessionalChange} displayEmpty required fullWidth>
+                            <MenuItem value="" disabled>Selecione o profissional</MenuItem>
+                            {professionalData?.map((professional) => (
+                                <MenuItem key={professional.id} value={professional.id}>{professional.name}</MenuItem>
+                            ))}
+                        </Select>
+
+                        <TextField
+                            label="Procedimento"
+                            name="consultationType"
                             variant="outlined"
                             onChange={handleChange}
                             fullWidth
                         />
                     </div>
 
-                    <div className="flex gap-4">
-                        <div className="flex flex-col gap-4 w-1/2">
-                            <TextField
-                                type="date"
-                                name="consultationDate"
-                                value={date}
-                                onChange={(e) => setDate(e.target.value)}
-                                required
-                                fullWidth
-                            />
-
-                            <Select name="status" value={consultation.status} onChange={handleChange} displayEmpty required fullWidth>
-                                <MenuItem value="" disabled>Status da consulta</MenuItem>
-                                <MenuItem value="AGENDADA">Agendada</MenuItem>
-                                <MenuItem value="REALIZADA">Realizada</MenuItem>
-                                <MenuItem value="REMARCADA">Remarcada</MenuItem>
-                                <MenuItem value="CANCELADA">Cancelada</MenuItem>
-                            </Select>
-
-                        </div>
-
-                        <div className="flex flex-col gap-2 w-1/2">
-                            <p>Horários disponíveis</p>
-
-                            <div className="flex flex-wrap gap-3">
-                                {(availableTimeData?.length ?? 0) ? (
-                                    availableTimeData?.map((time) => (
-                                        <span
-                                            key={time.id}
-                                            onClick={() => handleTimeSelection(time.time, time.booked)}
-                                            style={{
-                                                color: "white",
-                                                backgroundColor: time.booked
-                                                    ? "#BABABA"
-                                                    : selectedTime === time.time
-                                                        ? "#14f00c"
-                                                        : "#8338EC",
-                                                cursor: time.booked ? "not-allowed" : "pointer",
-                                                padding: "8px",
-                                                borderRadius: "5px",
-                                                transition: "0.2s",
-                                            }}
-                                        >
-                                            {time.time}
-                                        </span>
-                                    ))
-                                ) : (
-                                    <p style={{ color: "gray", fontStyle: "italic" }}>
-                                        Selecione o profissional e a data.
-                                    </p>
-                                )}
-                            </div>
-                        </div>
-                    </div>
+                    <TextField
+                        label="Observações"
+                        name="observations"
+                        variant="outlined"
+                        onChange={handleChange}
+                        fullWidth
+                    />
                 </div>
 
-                {/* Pagamento */}
-                <div className="flex flex-col w-full gap-3">
-
-                    <h3>Dados de pagamento</h3>
-
-                    <div className="flex gap-4">
+                <div className="flex gap-4">
+                    <div className="flex flex-col gap-4 w-1/2">
                         <TextField
-                            label="Valor da Consulta (R$)"
-                            name="consultationValue"
-                            type="number"
-                            variant="outlined"
-                            value={consultation.consultationValue}
-                            onChange={handleChange}
+                            type="date"
+                            name="consultationDate"
+                            value={date}
+                            onChange={(e) => setDate(e.target.value)}
                             required
                             fullWidth
                         />
 
-                        <Select name="paymentMethod" value={consultation.paymentMethod} onChange={handleChange} displayEmpty required fullWidth>
-                            <MenuItem value="" disabled>Método de pagamento</MenuItem>
-                            <MenuItem value="Cartão de Crédito">Cartão de Crédito</MenuItem>
-                            <MenuItem value="Cartão de Débito">Cartão de Débito</MenuItem>
-                            <MenuItem value="PIX">PIX</MenuItem>
-                            <MenuItem value="Dinheiro">Dinheiro</MenuItem>
+                        <Select name="status" value={consultation.status} onChange={handleChange} displayEmpty required fullWidth>
+                            <MenuItem value="" disabled>Status da consulta</MenuItem>
+                            <MenuItem value="AGENDADA">Agendada</MenuItem>
+                            <MenuItem value="REALIZADA">Realizada</MenuItem>
+                            <MenuItem value="REMARCADA">Remarcada</MenuItem>
+                            <MenuItem value="CANCELADA">Cancelada</MenuItem>
                         </Select>
 
+                    </div>
 
-                        <Select name="paymentStatus" value={consultation.paymentStatus} onChange={handleChange} displayEmpty required fullWidth>
-                            <MenuItem value="" disabled>Status do pagamento</MenuItem>
-                            <MenuItem value="Pago">Pago</MenuItem>
-                            <MenuItem value="Pendente">Pendente</MenuItem>
-                        </Select>
+                    <div className="flex flex-col gap-2 w-1/2">
+                        <p>Horários disponíveis</p>
+
+                        <div className="flex flex-wrap gap-3">
+                            {(availableTimeData?.length ?? 0) ? (
+                                availableTimeData?.map((time) => (
+                                    <span
+                                        key={time.id}
+                                        onClick={() => handleTimeSelection(time.time, time.booked)}
+                                        style={{
+                                            color: "white",
+                                            backgroundColor: time.booked
+                                                ? "#BABABA"
+                                                : selectedTime === time.time
+                                                    ? "#14f00c"
+                                                    : "#8338EC",
+                                            cursor: time.booked ? "not-allowed" : "pointer",
+                                            padding: "8px",
+                                            borderRadius: "5px",
+                                            transition: "0.2s",
+                                        }}
+                                    >
+                                        {time.time}
+                                    </span>
+                                ))
+                            ) : (
+                                <p style={{ color: "gray", fontStyle: "italic" }}>
+                                    Selecione o profissional e a data.
+                                </p>
+                            )}
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                <div className="flex w-1/2 gap-4 ml-auto">
-                    <button className="w-full bg-[#BABABA] p-3 rounded-sm text-white hover:cursor-pointer">Cancelar</button>
-                    <button className="w-full bg-[#8338EC] p-3 rounded-sm text-white hover:cursor-pointer" type="submit">Enviar</button>
+            <Divider/>
+
+            {/* Pagamento */}
+            <div className="flex flex-col w-full gap-3">
+
+                <h3>Dados de pagamento</h3>
+
+                <div className="flex gap-4">
+                    <TextField
+                        label="Valor da Consulta (R$)"
+                        name="consultationValue"
+                        type="number"
+                        variant="outlined"
+                        value={consultation.consultationValue}
+                        onChange={handleChange}
+                        required
+                        fullWidth
+                    />
+
+                    <Select name="paymentMethod" value={consultation.paymentMethod} onChange={handleChange} displayEmpty required fullWidth>
+                        <MenuItem value="" disabled>Método de pagamento</MenuItem>
+                        <MenuItem value="Cartão de Crédito">Cartão de Crédito</MenuItem>
+                        <MenuItem value="Cartão de Débito">Cartão de Débito</MenuItem>
+                        <MenuItem value="PIX">PIX</MenuItem>
+                        <MenuItem value="Dinheiro">Dinheiro</MenuItem>
+                    </Select>
+
+
+                    <Select name="paymentStatus" value={consultation.paymentStatus} onChange={handleChange} displayEmpty required fullWidth>
+                        <MenuItem value="" disabled>Status do pagamento</MenuItem>
+                        <MenuItem value="Pago">Pago</MenuItem>
+                        <MenuItem value="Pendente">Pendente</MenuItem>
+                    </Select>
                 </div>
-            </form>
-        </div>
+            </div>
+
+            <div className="flex w-1/2 gap-4 ml-auto">
+                <button className="w-full bg-[#BABABA] p-3 rounded-sm text-white hover:cursor-pointer">Cancelar</button>
+                <button className="w-full bg-[#8338EC] p-3 rounded-sm text-white hover:cursor-pointer" type="submit">Enviar</button>
+            </div>
+        </form>
     );
 }
 
