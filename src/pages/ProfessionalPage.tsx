@@ -1,9 +1,8 @@
 import { Divider } from "@mui/material";
-import ConsultationForm from "../components/consultation/ConsultationForm";
 import Sidebar from "../components/sidebar/Sidebar";
 import { useState } from "react";
 
-export default function FormConsultationPage() {
+export default function ProfessionalPage() {
     const [expanded, setExpanded] = useState(true); 
 
     return (
@@ -13,12 +12,11 @@ export default function FormConsultationPage() {
 
             <div className={`flex flex-1 justify-center items-center transition-all duration-300 ${expanded ? "ml-[296px]" : "ml-[80px]"}`}>
                 <div className="flex flex-col p-8 w-[800px] gap-4">
-                    <h2 className="text-xl font-semibold">Nova consulta</h2>
+                    <h2 className="text-xl font-semibold">Cadastrar profissional</h2>
                     <p className="text-gray-600">Preencha o formulário</p>
 
                     <Divider className="w-full" />
 
-                    <ConsultationForm />
                 </div>
             </div>
         </main>

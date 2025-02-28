@@ -5,6 +5,7 @@ import { Professional } from "../../interface/Professional";
 import { AvailableTime } from "../../interface/AvailableTime";
 import { Divider, MenuItem, Select, SelectChangeEvent, TextField } from "@mui/material";
 import { Consultation } from "../../interface/Consultation";
+import SnackbarMessage from "../SnackbarMessage";
 
 const ConsultationForm = () => {
 
@@ -16,6 +17,8 @@ const ConsultationForm = () => {
     const [availableTimeData, setAvailableTimeData] = useState<AvailableTime[] | null>();
     const [patientData, setPatientData] = useState<Patient | null>(null);
     const [selectedTime, setSelectedTime] = useState<string | null>(null);
+    const [consultationSend, setConsultationSend] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
     const [consultation, setConsultation] = useState<Consultation>({
         patientName: "",
         patientEmail: "",
@@ -95,7 +98,9 @@ const ConsultationForm = () => {
 
         try {
             await axios.post("http://localhost:8080/consultation", updatedConsultation);
-            alert("Consulta cadastrada com sucesso");
+
+            setSnackbarMessage("Cosulta marcada com sucesso!")
+            setConsultationSend(true);
         } catch (error) {
             console.log("Erro ao cadastrar consulta", error);
         }
@@ -178,7 +183,7 @@ const ConsultationForm = () => {
                 </div>
             </div>
 
-            <Divider/>
+            <Divider />
 
             {/* Dados da Consulta */}
             <div className="flex flex-col w-full gap-3">
@@ -268,7 +273,7 @@ const ConsultationForm = () => {
                 </div>
             </div>
 
-            <Divider/>
+            <Divider />
 
             {/* Pagamento */}
             <div className="flex flex-col w-full gap-3">
@@ -308,6 +313,12 @@ const ConsultationForm = () => {
                 <button className="w-full bg-[#BABABA] p-3 rounded-sm text-white hover:cursor-pointer">Cancelar</button>
                 <button className="w-full bg-[#8338EC] p-3 rounded-sm text-white hover:cursor-pointer" type="submit">Enviar</button>
             </div>
+
+            <SnackbarMessage
+                message={snackbarMessage}
+                open={consultationSend}
+                onClose={() => setConsultationSend(false)}
+            />
         </form>
     );
 }
